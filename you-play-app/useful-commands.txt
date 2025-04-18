@@ -1,0 +1,21 @@
+-- docker
+
+docker compose up --build -d
+docker logs auth-service
+docker compose down
+docker compose ps
+docker volume rm you-play-app_auth-db-data
+
+-- postgres
+
+docker exec -it auth-db psql -U postgres
+\c auth-db
+\dt
+SELECT * FROM users;
+
+-- test auth
+
+curl -X POST http://localhost:8000/register -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
+curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "testpassword"}'
+curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "wrongpassword"}'
+curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "wrongusarname", "password": "wrongpassword"}'

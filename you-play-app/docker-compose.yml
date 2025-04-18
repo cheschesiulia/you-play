@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+    networks:
+      - auth-net
+
+  auth-db:
+    image: postgres:14
+    container_name: auth-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    networks:
+      - auth-net
+    ports:
+      - "5433:5432"
+
+volumes:
+  auth-db-data:
+
+networks:
+  auth-net:
