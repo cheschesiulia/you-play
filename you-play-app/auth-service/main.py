@@ -21,6 +21,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 class User(BaseModel):
     username: str
     password: str
+    plan: str = "basic"
 
 def response(success: bool, message: str, status_code: int = 200, data: dict = None):
     return JSONResponse(
@@ -64,7 +65,8 @@ def initialize_db():
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
             username VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
+            password VARCHAR(255) NOT NULL,
+            plan VARCHAR(50) DEFAULT 'basic'
         );
     """)
 
@@ -94,7 +96,7 @@ async def register(user: User):
         return response(False, "Username already exists", 400)
 
     try:
-        cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (user.username, user.password))
+        cur.execute("INSERT INTO users (username, password, plan) VALUES (%s, %s, %s)", (user.username, user.password, user.plan))
         conn.commit()
     except Exception as e:
         cur.close()
@@ -125,10 +127,16 @@ async def login(user: User):
         conn.close()
         return response(False, "Invalid credentials", 400)
 
-    token = generate_jwt(user.username)
+    plan = result[3]
+    token = generate_jwt(user.username, plan)
+
     cur.close()
     conn.close()
     return response(True, "Login successful", data={"token": token})
 
-def generate_jwt(username: str):
-    return jwt.encode({"sub": username}, SECRET_KEY, algorithm=ALGORITHM)
+def generate_jwt(username: str, plan: str):
+    payload = {
+        "sub": username,
+        "plan": plan
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)

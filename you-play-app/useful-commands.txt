@@ -17,6 +17,6 @@ SELECT * FROM users;
 -- test auth
 
 curl -X POST http://localhost:8000/register -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
-curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "testpassword"}'
+curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
 curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "wrongpassword"}'
 curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "wrongusarname", "password": "wrongpassword"}'
