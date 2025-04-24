@@ -42,8 +42,27 @@ services:
     networks:
       - auth-net
 
+  streaming-service:
+    build: ./streaming-service
+    container_name: streaming-service
+    ports:
+      - "8001:8000"
+    environment:
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+    networks:
+      - streaming-net
+      - auth-net
+
 volumes:
   auth-db-data:
 
 networks:
   auth-net:
+  streaming-net:

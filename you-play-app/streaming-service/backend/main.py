@@ -1,14 +1,15 @@
 import os
 import threading
 import time
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from contextlib import asynccontextmanager
-from services import MinioService, SongService
-from models import SongResponse, SongDownloadResponse
+from backend.services import MinioService, SongService
+from backend.models import SongResponse, SongDownloadResponse
+from backend.auth import verify_token
 from typing import List
 from dotenv import load_dotenv
 from pathlib import Path
-
+from fastapi.middleware.cors import CORSMiddleware
 env_path = Path(__file__).resolve().parent.parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -34,26 +35,34 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Streaming Service API", lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/songs", response_model=List[SongResponse])
-async def get_songs():
+async def get_songs(token_data: dict = Depends(verify_token)):
     return song_service.get_all_songs()
 
 @app.get("/songs/artist/{artist}", response_model=List[SongResponse])
-async def get_songs_by_artist(artist: str):
+async def get_songs_by_artist(artist: str, token_data: dict = Depends(verify_token)):
     songs = song_service.get_songs_by_artist(artist)
     if not songs:
         raise HTTPException(status_code=404, detail=f"No songs found for artist: {artist}")
     return songs
 
 @app.get("/songs/genre/{genre}", response_model=List[SongResponse])
-async def get_songs_by_genre(genre: str):
+async def get_songs_by_genre(genre: str, token_data: dict = Depends(verify_token)):
     songs = song_service.get_songs_by_genre(genre)
     if not songs:
         raise HTTPException(status_code=404, detail=f"No songs found for genre: {genre}")
     return songs
 
 @app.get("/song/{title}", response_model=SongDownloadResponse)
-async def get_song_download(title: str):
+async def get_song_download(title: str, token_data: dict = Depends(verify_token)):
     song = song_service.get_song_by_title(title)
     if not song:
         raise HTTPException(status_code=404, detail=f"Song not found: {title}")
