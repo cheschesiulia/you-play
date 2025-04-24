@@ -55,32 +55,18 @@ class SongService:
     def __init__(self, minio_service: MinioService):
         self.minio_service = minio_service
         self.songs: List[SongDetails] = []
-        self.last_sync = ""
 
     def refresh_songs(self):
         self.songs = self.minio_service.get_metadata()
 
-    def get_all_songs(self) -> List[SongResponse]:
-        return [SongResponse(**song.dict()) for song in self.songs]
-
-    def get_songs_by_artist(self, artist: str) -> List[SongResponse]:
-        artist = artist.lower()
-        print(artist) 
-        return [
-            SongResponse(**song.dict()) 
-            for song in self.songs 
-            if artist in song.artist.lower()
-        ]
-
-    def get_songs_by_genre(self, genre: str) -> List[SongResponse]:
-        genre = genre.lower()
-        return [
-            SongResponse(**song.dict()) 
-            for song in self.songs 
-            if song.genre.lower() == genre
-        ]
+    def get_all_songs(self) -> List[SongDetails]:
+        return self.songs
 
     def get_song_by_title(self, title: str) -> Optional[SongDetails]:
-        title = title.lower()
-        matches = [song for song in self.songs if song.title.lower() == title]
-        return matches[0] if matches else None 
+        return next((song for song in self.songs if song.title == title), None)
+
+    def get_songs_by_artist(self, artist: str) -> List[SongDetails]:
+        return [song for song in self.songs if song.artist.lower() == artist.lower()]
+
+    def get_songs_by_genre(self, genre: str) -> List[SongDetails]:
+        return [song for song in self.songs if song.genre.lower() == genre.lower()] 

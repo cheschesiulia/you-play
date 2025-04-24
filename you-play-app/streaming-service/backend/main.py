@@ -76,6 +76,18 @@ async def get_song_download(title: str, token_data: dict = Depends(verify_token)
         title=song.title
     )
 
+@app.get("/cover/{title}")
+async def get_song_cover(title: str, token_data: dict = Depends(verify_token)):
+    song = song_service.get_song_by_title(title)
+    if not song:
+        raise HTTPException(status_code=404, detail=f"Song not found: {title}")
+    
+    cover_url = minio_service.get_download_url(song.cover_s3_key)
+    if not cover_url:
+        raise HTTPException(status_code=500, detail="Failed to generate cover URL")
+    
+    return {"cover_url": cover_url}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=API_HOST, port=API_PORT) 

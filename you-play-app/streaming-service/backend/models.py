@@ -9,7 +9,9 @@ class SongBase(BaseModel):
 
 class SongDetails(SongBase):
     file_path: str
+    cover_path: Optional[str] = None
     s3_key: str
+    cover_s3_key: Optional[str] = None
 
 class SongResponse(SongBase):
     pass
