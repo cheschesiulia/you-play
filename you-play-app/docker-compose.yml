@@ -60,9 +60,53 @@ services:
       - streaming-net
       - auth-net
 
+  playlist-service:
+    build: ./playlist-service
+    container_name: playlist-service
+    ports:
+      - "8002:8000"
+    depends_on:
+      playlist-db:
+        condition: service_healthy
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=playlist_db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ENVIRONMENT=test
+    networks:
+      - playlist-net
+      - auth-net
+      - streaming-net
+    restart: on-failure
+
+  playlist-db:
+    image: postgres:14
+    container_name: playlist-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=playlist_db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    volumes:
+      - playlist-db-data:/var/lib/postgresql/data
+    networks:
+      - playlist-net
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d playlist_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   auth-db-data:
+  playlist-db-data:
 
 networks:
   auth-net:
   streaming-net:
+  playlist-net:
