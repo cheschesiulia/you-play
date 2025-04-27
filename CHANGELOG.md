@@ -1,13 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+- Frontend.
+- Functionality to create playlists and add songs to them.
+- Recommendations system based on user's history and liked songs.
+- Kong.
+- CI/CD.
+- Tests.
+
 ## Andrei Anghelescu 2025-04-27
 
 ### Added
 - Created a playlist service. It allows the user to like and unlike songs.
 - It also allows the user to see the history of the songs they have listened to.
-- [TODO] To give the user the ability to create playlists and add songs to them.
-- [TODO] To give the user recommendations based on the history of the songs they have listened to and the songs they have liked.
-
 
 ## Andrei Anghelescu 2025-04-24
 
