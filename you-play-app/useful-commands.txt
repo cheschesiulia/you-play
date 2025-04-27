@@ -1,11 +1,13 @@
 -- docker
 
 docker compose up --build -d
-docker logs auth-service
+docker logs kong
 docker compose down
 docker compose ps
-docker volume rm you-play-app_auth-db-data
+docker network rm you-play-app_youplay-net
+docker volume rm you-play-app_auth-db-data you-play-app_playlist-db-data
 docker compose down --remove-orphans
+docker compose logs -f playlist-service
 
 -- postgres
 
@@ -14,9 +16,26 @@ docker exec -it auth-db psql -U postgres
 \dt
 SELECT * FROM users;
 
--- test auth
+-- requests
 
-curl -X POST http://localhost:8000/register -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
-curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
-curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "testuser", "password": "wrongpassword"}'
-curl -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"username": "wrongusarname", "password": "wrongpassword"}'
+before kong:
+
+http://localhost:8002 -> auth-service
+http://localhost:8003 -> streaming-service
+http://localhost:8004 -> playlist-service
+
+after kong:
+
+http://localhost:8000/auth -> auth-service
+http://localhost:8000/playlist -> streaming-service
+http://localhost:8000/streaming -> playlist-service
+
+-- test requests
+
+curl -X POST http://localhost:8000/auth/register -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
+curl -X POST http://localhost:8000/auth/login -H "Content-Type: application/json" -d '{"username": "iuliatest", "password": "passtest"}'
+curl -X GET "http://localhost:8000/streaming/songs" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpdWxpYXRlc3QiLCJwbGFuIjoiYmFzaWMifQ.9JOfDoYtl6c5Je3q1ygE6c5E7eFwaq3bJqHBvfqk8Co"
+curl -X POST "http://localhost:8000/playlist/like-song/iuliatest/Meneaito"
+curl -X GET "http://localhost:8000/playlist/liked-songs/iuliatest"
+curl -X POST "http://localhost:8000/playlist/listening-history" -H "Content-Type: application/json" -d '{"username": "iuliatest", "song_title": "Meneaito"}'
+curl -X GET "http://localhost:8000/streaming/song/Meneaito" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpdWxpYXRlc3QiLCJwbGFuIjoiYmFzaWMifQ.9JOfDoYtl6c5Je3q1ygE6c5E7eFwaq3bJqHBvfqk8Co"

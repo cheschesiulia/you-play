@@ -1,0 +1,25 @@
+_format_version: "2.1"
+services:
+  - name: auth-service
+    url: http://auth-service:8000
+    routes:
+      - name: auth-route
+        paths:
+          - /auth
+        strip_path: true
+
+  - name: streaming-service
+    url: http://streaming-service:8000
+    routes:
+      - name: streaming-route
+        paths:
+          - /streaming
+        strip_path: true
+
+  - name: playlist-service
+    url: http://playlist-service:8000
+    routes:
+      - name: playlist-route
+        paths:
+          - /playlist
+        strip_path: true

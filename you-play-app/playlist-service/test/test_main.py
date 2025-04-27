@@ -3,7 +3,7 @@ import time
 import json
 import os
 
-BASE_URL = "http://localhost:8002"
+BASE_URL = "http://localhost:8000/playlist"
 
 def cleanup_database():
     print("\nCleaning database for new tests...")
