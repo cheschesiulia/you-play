@@ -12,15 +12,17 @@
 ## Andrei Anghelescu 2025-04-27
 
 ### Added
-- Created a playlist service. It allows the user to like and unlike songs.
-- It also allows the user to see the history of the songs they have listened to.
+- Playlist service that allows users to like and unlike songs.
+- History functionality to track the songs a user has listened to.
+- PostgreSQL playlists database with persistent storage.
 
 ## Andrei Anghelescu 2025-04-24
 
 ### Added
-- Created a MINIO data based on my personal raspberry pi, we'll use it with a public ip address for storing the songs.
-- Created a minimal streaming service. It checks the user's plan and allows them to stream songs with a time limit.
-- Streaming service provides the mp3 and the cover image.
+- MINIO-based storage solution hosted on my personal Raspberry Pi, used with a public IP address.
+- Minimal streaming service that allows users to stream songs based on their subscription plan.
+- Secure access using JWT token validation.
+- Serving mp3 files and cover images.
 
 ## Iulia Chesches 2025-04-18
 
