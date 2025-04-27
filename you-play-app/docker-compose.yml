@@ -58,7 +58,6 @@ services:
       - ALGORITHM=${ALGORITHM}
     networks:
       - streaming-net
-      - auth-net
 
   playlist-service:
     build: ./playlist-service
@@ -78,7 +77,6 @@ services:
       - ENVIRONMENT=test
     networks:
       - playlist-net
-      - auth-net
       - streaming-net
     restart: on-failure
 
