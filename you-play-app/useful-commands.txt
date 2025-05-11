@@ -1,6 +1,7 @@
 -- docker
 
 docker compose up --build -d
+docker compose up --build -d frontend
 docker logs kong
 docker compose down
 docker compose ps
