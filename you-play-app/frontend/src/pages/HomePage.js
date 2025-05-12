@@ -77,7 +77,6 @@ function HomePage() {
       <aside className="sidebar">
         <h2 className="logo">You-Play</h2>
         <nav>
-          <button className="nav-button" onClick={() => navigate('/')}>Home</button>
           <button className="nav-button" onClick={() => navigate('/liked-songs')}>Liked Songs</button>
           <button className="nav-button" onClick={() => navigate('/history')}>Listening History</button>
         </nav>

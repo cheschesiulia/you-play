@@ -70,19 +70,14 @@ body {
   color: #fff;
 }
 
+/* Sidebar layout */
 .sidebar {
   width: 220px;
   background-color: #1e1e1e;
   padding: 20px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.logo {
-  font-size: 24px;
-  color: #ff8383;
-  margin-bottom: 30px;
+  flex-direction: column;  /* Ensure items are stacked vertically */
+  justify-content: flex-start; /* Align at the start of the sidebar */
 }
 
 .nav-button {
@@ -93,10 +88,24 @@ body {
   padding: 12px 0;
   font-size: 16px;
   cursor: pointer;
+  width: 100%; /* Ensure buttons take full width */
 }
 
 .nav-button:hover {
   color: #ff8383;
+}
+
+/* Ensure the nav buttons are spaced out nicely */
+nav {
+  display: flex;
+  flex-direction: column;  /* Stack buttons vertically */
+  gap: 10px;  /* Optional: Add some space between buttons */
+}
+
+.logo {
+  font-size: 24px;
+  color: #ff8383;
+  margin-bottom: 30px;
 }
 
 .main-content {
