@@ -3,15 +3,55 @@ import React, { useEffect, useState } from 'react';
 
 function LikedSongsPage() {
   const [songs, setSongs] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('playlist/liked-songs/your_username', {
+
+    // Decode JWT to get username
+    const payload = token?.split('.')[1];
+    let username = null;
+
+    try {
+      if (payload) {
+        const decoded = JSON.parse(atob(payload));
+        username = decoded.sub;
+      }
+    } catch (e) {
+      console.error('Invalid token payload');
+      setError('Invalid token');
+      return;
+    }
+
+    if (!username) {
+      setError('Username not found in token');
+      return;
+    }
+
+    fetch(`/playlist/liked-songs/${username}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => res.json())
-      .then(setSongs);
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || 'Failed to fetch liked songs');
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSongs(data);
+        } else {
+          throw new Error('Unexpected response format');
+        }
+      })
+      .catch(err => {
+        console.error(err.message);
+        setError(err.message);
+      });
   }, []);
+
+  if (error) return <div className="container"><h2>Error</h2><p>{error}</p></div>;
 
   return (
     <div className="container">
@@ -20,7 +60,7 @@ function LikedSongsPage() {
         {songs.map(song => (
           <div key={song.title} className="song-card">
             <img
-              src={`streaming/cover/${song.title}`}
+              src={`/streaming/cover/${song.title}`}
               alt={song.title}
               style={{ width: 150, height: 150 }}
             />
