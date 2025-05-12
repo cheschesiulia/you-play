@@ -1,6 +1,5 @@
-// src/pages/RegisterPage.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -25,7 +24,7 @@ function RegisterPage() {
 
   return (
     <div className="container">
-      <h2>Register</h2>
+      <h2>Create Your Account</h2>
       <input
         placeholder="Username"
         value={username}
@@ -37,7 +36,8 @@ function RegisterPage() {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
-      <button onClick={register}>Register</button>
+      <button className="button" onClick={register}>Register</button>
+      <Link to="/login">Already have an account? Login</Link>
     </div>
   );
 }

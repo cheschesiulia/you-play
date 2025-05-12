@@ -1,71 +1,145 @@
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Reusable button */
 .button {
-  background-color: #007bff;
+  background-color: #ff8383;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  border-radius: 30px;
   font-size: 16px;
-  transition: background-color 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #f95a5a;
 }
 
+/* Auth container layout */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f4f4f9;
+  padding: 20px;
+  background-color: #121212;
+}
+
+.container h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
 }
 
 .container input {
   width: 300px;
-  padding: 12px;
+  padding: 14px;
   margin: 10px 0;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 6px;
   font-size: 16px;
-}
-
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background-color: #672f2f;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.container input::placeholder {
+  color: #aaa;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.container a {
+  color: #ff8383;
+  text-decoration: none;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.container a:hover {
+  text-decoration: underline;
+}
+
+.home-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #121212;
+  color: #fff;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #1e1e1e;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 24px;
+  color: #ff8383;
+  margin-bottom: 30px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: #fff;
+  text-align: left;
+  padding: 12px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  color: #ff8383;
+}
+
+.logout-wrapper {
+  margin-top: auto;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.search-bar {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  background-color: #333;
+  color: white;
+  margin: 20px 0;
+}
+
+.song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.song-item {
+  background-color: #1f1f1f;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.song-meta {
+  color: #aaa;
+  margin-left: 10px;
+}
+
+
+.logout-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
