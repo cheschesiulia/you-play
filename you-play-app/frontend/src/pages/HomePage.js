@@ -88,7 +88,8 @@ function HomePage() {
     setFilteredSongs(filtered);
   }, [search, songs]);
 
-  const toggleLike = async (songTitle) => {
+  const toggleLike = async (event, songTitle) => {
+    event.stopPropagation(); // prevent navigating to song page
     const isLiked = likedSongs.includes(songTitle);
     const url = isLiked
       ? `playlist/unlike-song/${username}/${encodeURIComponent(songTitle)}`
@@ -148,10 +149,7 @@ function HomePage() {
         <div className="song-list">
           {filteredSongs.length > 0 ? (
             filteredSongs.map((song, index) => (
-              <div
-                key={index}
-                className="song-item"
-                onClick={() => navigate(`/song/${encodeURIComponent(song.title)}`)}>
+              <div key={index} className="song-item">
                 <div className="song-cover">
                   {song.cover_url ? (
                     <img
@@ -164,7 +162,12 @@ function HomePage() {
                   )}
                 </div>
                 <div className="song-details">
-                  <h3>{song.title}</h3>
+                  <h3
+                    className="song-title-link"
+                    onClick={() => navigate(`/song/${encodeURIComponent(song.title)}`)}
+                  >
+                    {song.title}
+                  </h3>
                   <p className="song-artist">{song.artist || 'Unknown Artist'}</p>
                   <p className="song-genre">{song.genre || 'Unknown Genre'}</p>
                   <p className="song-duration">
@@ -173,7 +176,7 @@ function HomePage() {
                 </div>
                 <button
                   className="like-button"
-                  onClick={() => toggleLike(song.title)}
+                  onClick={(e) => toggleLike(e, song.title)}
                 >
                   {likedSongs.includes(song.title) ? '❤️ Unlike' : '🤍 Like'}
                 </button>

@@ -222,3 +222,13 @@ nav {
   width: 100%;
   max-width: 600px;
 }
+
+.song-title-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: white;
+}
+
+.song-title-link:hover {
+  color: #ff8383;
+}
