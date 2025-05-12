@@ -8,7 +8,7 @@ body {
 /* Reusable button */
 .button {
   background-color: #ff8383;
-  color: white;
+  color: black;
   padding: 12px 24px;
   border: none;
   border-radius: 30px;
@@ -80,19 +80,23 @@ body {
   justify-content: flex-start; /* Align at the start of the sidebar */
 }
 
+/* Navigation button styles */
 .nav-button {
-  background: none;
+  background-color: #ff8383;  /* Set background color */
+  color: black;  /* Set text color to black */
   border: none;
-  color: #fff;
-  text-align: left;
+  text-align: center;  /* Center the text horizontally */
   padding: 12px 0;
   font-size: 16px;
   cursor: pointer;
-  width: 100%; /* Ensure buttons take full width */
+  width: 100%;  /* Ensure buttons take full width */
+  border-radius: 30px;  /* Make the buttons rounded like the logout button */
+  transition: background-color 0.3s ease, color 0.3s ease;  /* Smooth transition for hover effect */
 }
 
 .nav-button:hover {
-  color: #ff8383;
+  background-color: #f95a5a;  /* Darker shade on hover */
+  color: white;  /* Change text color to white on hover for contrast */
 }
 
 /* Ensure the nav buttons are spaced out nicely */
@@ -178,10 +182,25 @@ nav {
 
 /* Styles for logout button */
 .logout-button-wrapper {
-  padding: 10px;
-  background-color: #ff8383;
+  padding: 0px;
+  background-color: black;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 0px;
   cursor: pointer;
+}
+
+
+.like-button {
+  background-color: transparent;
+  border: none;
+  color: #ff8383;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: auto;
+}
+
+.like-button:hover {
+  color: #f95a5a;
 }

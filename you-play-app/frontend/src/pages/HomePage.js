@@ -8,12 +8,14 @@ function HomePage() {
   const [songs, setSongs] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredSongs, setFilteredSongs] = useState([]);
+  const [likedSongs, setLikedSongs] = useState([]);
 
-  // Fetch songs from the backend
+  const token = localStorage.getItem('token');
+  const username = localStorage.getItem('username');
+
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await fetch('/streaming/songs', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -27,7 +29,6 @@ function HomePage() {
         const data = await response.json();
 
         if (Array.isArray(data)) {
-          // Now fetch cover URLs for each song
           const songsWithCovers = await Promise.all(
             data.map(async (song) => {
               const coverResponse = await fetch(`/streaming/cover/${song.title}`, {
@@ -38,10 +39,9 @@ function HomePage() {
 
               if (coverResponse.ok) {
                 const coverData = await coverResponse.json();
-                song.cover_url = coverData.cover_url; // Assign the cover URL to the song
+                song.cover_url = coverData.cover_url;
               } else {
-                console.error(`Error fetching cover for ${song.title}`);
-                song.cover_url = ''; // Fallback in case of error
+                song.cover_url = '';
               }
 
               return song;
@@ -50,8 +50,8 @@ function HomePage() {
 
           setSongs(songsWithCovers);
           setFilteredSongs(songsWithCovers);
+          await fetchLikedSongs(); // fetch liked songs after setting songs
         } else {
-          console.error('Unexpected data format:', data);
           setSongs([]);
           setFilteredSongs([]);
         }
@@ -60,10 +60,26 @@ function HomePage() {
       }
     };
 
-    fetchSongs();
-  }, []);
+    const fetchLikedSongs = async () => {
+      try {
+        const response = await fetch(`playlist/liked-songs/${username}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  // Handle song search/filter
+        if (response.ok) {
+          const likedData = await response.json();
+          setLikedSongs(likedData.map(song => song.title));
+        }
+      } catch (error) {
+        console.error('Error fetching liked songs:', error);
+      }
+    };
+
+    fetchSongs();
+  }, [token, username]);
+
   useEffect(() => {
     const lowerSearch = search.toLowerCase();
     const filtered = songs.filter((song) =>
@@ -71,6 +87,34 @@ function HomePage() {
     );
     setFilteredSongs(filtered);
   }, [search, songs]);
+
+  const toggleLike = async (songTitle) => {
+    const isLiked = likedSongs.includes(songTitle);
+    const url = isLiked
+      ? `playlist/unlike-song/${username}/${encodeURIComponent(songTitle)}`
+      : `playlist/like-song/${username}/${encodeURIComponent(songTitle)}`;
+
+    const method = isLiked ? 'DELETE' : 'POST';
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setLikedSongs((prev) =>
+          isLiked ? prev.filter((title) => title !== songTitle) : [...prev, songTitle]
+        );
+      } else {
+        console.error('Failed to toggle like status');
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
 
   return (
     <div className="home-layout">
@@ -108,20 +152,28 @@ function HomePage() {
                 <div className="song-cover">
                   {song.cover_url ? (
                     <img
-                      src={song.cover_url}  // Display the cover image fetched from /cover/{title}
+                      src={song.cover_url}
                       alt={song.title}
                       className="cover-img"
                     />
                   ) : (
-                    <div className="no-cover">No Cover Available</div>  // Fallback if no cover
+                    <div className="no-cover">No Cover Available</div>
                   )}
                 </div>
                 <div className="song-details">
                   <h3>{song.title}</h3>
                   <p className="song-artist">{song.artist || 'Unknown Artist'}</p>
                   <p className="song-genre">{song.genre || 'Unknown Genre'}</p>
-                  <p className="song-duration">{Math.floor(song.duration / 60)}:{('0' + song.duration % 60).slice(-2)}</p>
+                  <p className="song-duration">
+                    {Math.floor(song.duration / 60)}:{('0' + (song.duration % 60)).slice(-2)}
+                  </p>
                 </div>
+                <button
+                  className="like-button"
+                  onClick={() => toggleLike(song.title)}
+                >
+                  {likedSongs.includes(song.title) ? '❤️ Unlike' : '🤍 Like'}
+                </button>
               </div>
             ))
           ) : (
