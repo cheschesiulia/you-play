@@ -148,7 +148,10 @@ function HomePage() {
         <div className="song-list">
           {filteredSongs.length > 0 ? (
             filteredSongs.map((song, index) => (
-              <div key={index} className="song-item">
+              <div
+                key={index}
+                className="song-item"
+                onClick={() => navigate(`/song/${encodeURIComponent(song.title)}`)}>
                 <div className="song-cover">
                   {song.cover_url ? (
                     <img

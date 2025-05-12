@@ -204,3 +204,21 @@ nav {
 .like-button:hover {
   color: #f95a5a;
 }
+
+.song-player-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.player-cover {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.audio-player {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
+}
