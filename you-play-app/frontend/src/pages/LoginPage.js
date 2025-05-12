@@ -25,7 +25,7 @@ function LoginPage() {
 
   return (
     <div className="container">
-      <h2>Login to Melodii</h2>
+      <h2>Login to You-Play</h2>
       <input
         placeholder="Username"
         value={username}

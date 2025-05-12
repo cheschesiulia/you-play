@@ -24,7 +24,7 @@ function RegisterPage() {
 
   return (
     <div className="container">
-      <h2>Create Your Account</h2>
+      <h2>Create Your You-Play Account</h2>
       <input
         placeholder="Username"
         value={username}
