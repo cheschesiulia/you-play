@@ -1,4 +1,3 @@
-// src/pages/LikedSongsPage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoutButton from '../components/LogoutButton';
@@ -144,7 +143,12 @@ function LikedSongsPage() {
                   )}
                 </div>
                 <div className="song-details">
-                  <h3>{song.title}</h3>
+                  <h3
+                    className="song-title-link"
+                    onClick={() => navigate(`/song/${encodeURIComponent(song.title)}`)}
+                  >
+                    {song.title}
+                  </h3>
                 </div>
                 <button
                   className="like-button"

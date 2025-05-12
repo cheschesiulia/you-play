@@ -1,4 +1,3 @@
-// src/pages/ListeningHistoryPage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoutButton from '../components/LogoutButton';
@@ -155,7 +154,12 @@ function ListeningHistoryPage() {
                   )}
                 </div>
                 <div className="song-details">
-                  <h3>{song.title}</h3>
+                  <h3
+                    className="song-title-link"
+                    onClick={() => navigate(`/song/${encodeURIComponent(song.title)}`)}
+                  >
+                    {song.title}
+                  </h3>
                   <p className="song-date">Listened at: {new Date(song.listened_at).toLocaleString()}</p>
                 </div>
                 <button
