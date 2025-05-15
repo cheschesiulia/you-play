@@ -11,9 +11,9 @@ services:
       - playlist-net
     deploy:
       replicas: 2
-      # placement:
-        # constraints:
-        #   - node.role == worker
+      placement:
+        constraints:
+          - node.role == worker
 
   kong:
     image: kong:latest
@@ -37,9 +37,9 @@ services:
     restart: always
     deploy:
       replicas: 1
-      # placement:
-        # constraints:
-        #   - node.role == manager
+      placement:
+        constraints:
+          - node.role == manager
 
   auth-service:
     image: auth-service:latest
@@ -59,9 +59,9 @@ services:
       - auth-net
     deploy:
       replicas: 2
-      # placement:
-        # constraints:
-        #   - node.role == worker
+      placement:
+        constraints:
+          - node.role == worker
 
   auth-db:
     image: postgres:14
@@ -78,9 +78,9 @@ services:
       - "5433:5432"
     deploy:
       replicas: 1
-      # placement:
-        # constraints:
-        #   - node.role == manager
+      placement:
+        constraints:
+          - node.role == manager
       restart_policy:
         condition: on-failure
 
@@ -92,9 +92,9 @@ services:
       - auth-net
     deploy:
       replicas: 1
-      # placement:
-        # constraints:
-        #   - node.role == manager
+      placement:
+        constraints:
+          - node.role == manager
 
   streaming-service:
     image: streaming-service:latest
@@ -113,9 +113,9 @@ services:
       - streaming-net
     deploy:
       replicas: 2
-      # placement:
-        # constraints:
-        #   - node.role == worker
+      placement:
+        constraints:
+          - node.role == worker
 
   playlist-service:
     image: playlist-service:latest
@@ -137,9 +137,9 @@ services:
     restart: on-failure
     deploy:
       replicas: 2
-      # placement:
-        # constraints:
-        #   - node.role == worker
+      placement:
+        constraints:
+          - node.role == worker
 
   playlist-db:
     image: postgres:14
@@ -161,9 +161,9 @@ services:
       retries: 5
     deploy:
       replicas: 1
-      # placement:
-        # constraints:
-        #   - node.role == manager
+      placement:
+        constraints:
+          - node.role == manager
       restart_policy:
         condition: on-failure
 
