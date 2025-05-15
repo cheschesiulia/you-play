@@ -2,18 +2,21 @@ version: "3.8"
 
 services:
   frontend:
-    build: ./frontend
-    container_name: frontend
+    image: frontend:latest
     ports:
       - "3000:80"
     networks:
       - auth-net
       - streaming-net
       - playlist-net
+    deploy:
+      replicas: 2
+      # placement:
+        # constraints:
+        #   - node.role == worker
 
   kong:
     image: kong:latest
-    container_name: kong
     environment:
       - KONG_DATABASE=off
       - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
@@ -32,94 +35,119 @@ services:
     volumes:
       - ./kong.yml:/usr/local/kong/declarative/kong.yml
     restart: always
+    deploy:
+      replicas: 1
+      # placement:
+        # constraints:
+        #   - node.role == manager
 
   auth-service:
-    build: ./auth-service
-    container_name: auth-service
+    image: auth-service:latest
     ports:
       - "8002:8000"
     depends_on:
       - auth-db
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - DATABASE_URL=${DATABASE_URL}
-      - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=${ALGORITHM}
+      - POSTGRES_USER=iuliasiangh
+      - POSTGRES_PASSWORD=parolanoastra
+      - POSTGRES_DB=auth_db
+      - POSTGRES_PORT=5432
+      - DATABASE_URL=postgresql://iuliasiangh:parolanoastra@auth-db:5432/auth_db
+      - SECRET_KEY=iuliasupersecretangh
+      - ALGORITHM=HS256
     networks:
       - auth-net
+    deploy:
+      replicas: 2
+      # placement:
+        # constraints:
+        #   - node.role == worker
 
   auth-db:
     image: postgres:14
-    container_name: auth-db
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=iuliasiangh
+      - POSTGRES_PASSWORD=parolanoastra
+      - POSTGRES_DB=auth_db
+      - POSTGRES_PORT=5432
     volumes:
       - auth-db-data:/var/lib/postgresql/data
     networks:
       - auth-net
     ports:
       - "5433:5432"
+    deploy:
+      replicas: 1
+      # placement:
+        # constraints:
+        #   - node.role == manager
+      restart_policy:
+        condition: on-failure
 
   adminer:
     image: adminer
-    container_name: auth-adminer
     ports:
       - "8080:8080"
     networks:
       - auth-net
+    deploy:
+      replicas: 1
+      # placement:
+        # constraints:
+        #   - node.role == manager
 
   streaming-service:
-    build: ./streaming-service
-    container_name: streaming-service
+    image: streaming-service:latest
     ports:
       - "8003:8000"
     environment:
-      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_BUCKET=${MINIO_BUCKET}
+      - MINIO_ENDPOINT=http://gemdekaise.go.ro:9007
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=admin123
+      - MINIO_BUCKET=melodii
       - API_HOST=0.0.0.0
       - API_PORT=8000
-      - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=${ALGORITHM}
+      - SECRET_KEY=iuliasupersecretangh
+      - ALGORITHM=HS256
     networks:
       - streaming-net
+    deploy:
+      replicas: 2
+      # placement:
+        # constraints:
+        #   - node.role == worker
 
   playlist-service:
-    build: ./playlist-service
-    container_name: playlist-service
+    image: playlist-service:latest
     ports:
       - "8004:8000"
     depends_on:
-      playlist-db:
-        condition: service_healthy
+      - playlist-db
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=iuliasiangh
+      - POSTGRES_PASSWORD=parolanoastra
       - POSTGRES_DB=playlist_db
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=${ALGORITHM}
+      - POSTGRES_PORT=5432
+      - SECRET_KEY=iuliasupersecretangh
+      - ALGORITHM=HS256
       - ENVIRONMENT=test
     networks:
       - playlist-net
       - streaming-net
     restart: on-failure
+    deploy:
+      replicas: 2
+      # placement:
+        # constraints:
+        #   - node.role == worker
 
   playlist-db:
     image: postgres:14
-    container_name: playlist-db
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=iuliasiangh
+      - POSTGRES_PASSWORD=parolanoastra
       - POSTGRES_DB=playlist_db
-      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_PORT=5432
     volumes:
       - playlist-db-data:/var/lib/postgresql/data
     networks:
@@ -127,10 +155,17 @@ services:
     ports:
       - "5434:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d playlist_db"]
+      test: ["CMD-SHELL", "pg_isready -U iuliasiangh -d playlist_db"]
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      replicas: 1
+      # placement:
+        # constraints:
+        #   - node.role == manager
+      restart_policy:
+        condition: on-failure
 
 volumes:
   auth-db-data:
