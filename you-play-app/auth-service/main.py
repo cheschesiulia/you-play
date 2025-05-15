@@ -53,11 +53,25 @@ def get_db_connection():
                 host="auth-db",
                 port=os.getenv("POSTGRES_PORT")
             )
+            
+            # Creează tabela dacă nu există
+            with conn.cursor() as cur:
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS users (
+                        id SERIAL PRIMARY KEY,
+                        username VARCHAR(150) UNIQUE NOT NULL,
+                        email VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL
+                    );
+                """)
+                conn.commit()
+            
             return conn
+
         except OperationalError as e:
-            print(f"Attempt {attempts + 1}: Retrying...")
+            print(f"Attempt {attempts + 1}: Retrying DB connection...")
             time.sleep(1)
-            attempts = attempts + 1
+            attempts += 1
     
     return None
 
