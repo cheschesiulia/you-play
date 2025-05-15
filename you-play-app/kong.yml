@@ -31,3 +31,10 @@ services:
         paths:
           - /playlist
         strip_path: true
+
+  - name: frontend
+    url: http://frontend:80
+    routes:
+      - name: frontend-route
+        paths:
+          - /
