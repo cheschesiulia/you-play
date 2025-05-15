@@ -1,0 +1,51 @@
+name: Build and Push to GHCR
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./you-play-app/frontend
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/frontend:latest
+
+    - name: Build and push auth-service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./you-play-app/auth-service
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/auth-service:latest
+
+    - name: Build and push playlist-service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./you-play-app/playlist-service
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/playlist-service:latest
+
+    - name: Build and push streaming-service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./you-play-app/streaming-service
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/streaming-service:latest
