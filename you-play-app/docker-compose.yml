@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: frontend:latest
+    image: ghcr.io/cheschesiulia/frontend:latest
     ports:
       - "3000:80"
     networks:
@@ -42,7 +42,7 @@ services:
           - node.role == manager
 
   auth-service:
-    image: auth-service:latest
+    image: ghcr.io/cheschesiulia/auth-service:latest
     ports:
       - "8002:8000"
     depends_on:
@@ -97,7 +97,7 @@ services:
           - node.role == manager
 
   streaming-service:
-    image: streaming-service:latest
+    image: ghcr.io/cheschesiulia/streaming-service:latest
     ports:
       - "8003:8000"
     environment:
@@ -118,7 +118,7 @@ services:
           - node.role == worker
 
   playlist-service:
-    image: playlist-service:latest
+    image: ghcr.io/cheschesiulia/playlist-service:latest
     ports:
       - "8004:8000"
     depends_on:
