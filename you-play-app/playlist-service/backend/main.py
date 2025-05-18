@@ -136,5 +136,40 @@ async def get_user_history(username: str, db: Session = Depends(get_db)):
     
     return history
 
+@app.get("/recommendations/{username}", response_model=List[SongBase])
+async def get_recommendations(username: str, db: Session = Depends(get_db)):
+    """
+    Recommend songs for a user based on their liked songs and listening history.
+    Recommends songs by similar artists or genres, excluding already liked/listened songs.
+    """
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    liked = user.liked_songs
+    history_entries = db.query(ListeningHistory).filter(ListeningHistory.user_username == username).all()
+    history_titles = set(entry.song_title for entry in history_entries)
+
+    preferred_genres = set(song.genre for song in liked if song.genre)
+    preferred_artists = set(song.artist for song in liked if song.artist)
+    for entry in history_entries:
+        song = db.query(Song).filter(Song.title == entry.song_title).first()
+        if song:
+            if song.genre:
+                preferred_genres.add(song.genre)
+            if song.artist:
+                preferred_artists.add(song.artist)
+
+    exclude_titles = set(song.title for song in liked) | history_titles
+
+    query = db.query(Song).filter(~Song.title.in_(exclude_titles))
+    if preferred_genres or preferred_artists:
+        query = query.filter(
+            (Song.genre.in_(preferred_genres)) | (Song.artist.in_(preferred_artists))
+        )
+    recommendations = query.limit(10).all()
+
+    return recommendations
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000) 

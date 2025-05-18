@@ -215,6 +215,7 @@ function HomePage() {
         <nav>
           <button className="nav-button" onClick={() => navigate('/liked-songs')}>Liked Songs</button>
           <button className="nav-button" onClick={() => navigate('/history')}>Listening History</button>
+          <button className="nav-button" onClick={() => navigate('/recommendations')}>Recommendations</button>
         </nav>
         <div className="logout-wrapper">
           <LogoutButton />
