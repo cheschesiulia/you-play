@@ -1,0 +1,13 @@
+apiVersion: 1
+datasources:
+  - name: PostgreSQL-1
+    type: postgres
+    access: proxy
+    url: playlist-db:5432
+    user: iuliasiangh
+    secureJsonData:
+      password: parolanoastra
+    database: playlist_db
+    isDefault: true
+    jsonData:
+      sslmode: disable
