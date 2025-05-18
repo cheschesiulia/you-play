@@ -22,6 +22,7 @@ function App() {
         <Route path="/liked-songs" element={<PrivateRoute element={LikedSongsPage} />} />
         <Route path="/history" element={<PrivateRoute element={ListeningHistoryPage} />} />
         <Route path="/song/:title" element={<PrivateRoute element={SongPlayerPage} />} />
+        <Route path="/recommendations" element={<PrivateRoute element={LikedSongsPage} />} />
 
         {/* Catch-all Route for 404 */}
         <Route path="*" element={<div>404 - Not Found</div>} />
