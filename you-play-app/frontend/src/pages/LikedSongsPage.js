@@ -121,21 +121,6 @@ function LikedSongsPage() {
 
       <main className="main-content">
         <div className="top-bar">
-          <button
-            className="back-button"
-            style={{
-              marginRight: '16px',
-              padding: '6px 16px',
-              fontSize: '1rem',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              background: '#f5f5f5',
-              cursor: 'pointer'
-            }}
-            onClick={() => navigate('/')}
-          >
-            ← Back to Home
-          </button>
           <h1>Liked Songs ❤️</h1>
           <div className="logout-button-wrapper">
             <LogoutButton />
