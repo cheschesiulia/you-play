@@ -32,6 +32,47 @@ services:
         constraints:
           - node.role == manager
 
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitor-net
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  loki:
+    image: grafana/loki:2.9.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitor-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitor-net
+    deploy:
+      mode: global
+
   kong:
     image: kong:latest
     environment:
@@ -51,7 +92,6 @@ services:
       - playlist-net
     volumes:
       - ./kong.yml:/usr/local/kong/declarative/kong.yml
-    restart: always
     deploy:
       replicas: 1
       placement:
@@ -151,7 +191,6 @@ services:
     networks:
       - playlist-net
       - streaming-net
-    restart: on-failure
     deploy:
       replicas: 2
       placement:
@@ -188,8 +227,10 @@ volumes:
   auth-db-data:
   playlist-db-data:
   portainer_data:
+  grafana_data:
 
 networks:
   auth-net:
   streaming-net:
   playlist-net:
+  monitor-net:
