@@ -2,25 +2,86 @@
 
 ## Notes
 
-1. Deploy with Play With Docker:
-    - Go to https://labs.play-with-docker.com/
-    - Click on "Start a new session"
-    - Create 3 instances
-    - Make one of them a manager and the other two workers:
-        - `docker swarm init --advertise-addr <MANAGER_IP>`
-        - `docker swarm join --token <WORKER_TOKEN> <MANAGER_IP>:2377` (this command will be shown in the terminal of the manager, just copy paste it in the terminal of the workers)
-    - On the manager, clone the repository:
-        - `git clone https://github.com/cheschesiulia/you-play.git`
-        - And deploy stack
-        - `docker stack deploy -c docker-compose.yml youplay`
-    - In the UI it will show all exposed ports, click on 8000 (kong), which will redirect you to frontend
+# 1. Create a Docker network for Swarm nodes
+docker network create swarm-net
 
-2. Place any other services in the docker-compose.yml file, and push their images to Github registry by modifying the yml file under .github/workflows and pushing the changes to the main branch.
+# 2. Start manager and 2 workers (all Docker-in-Docker)
+```
+docker run -dit --name manager --hostname manager --network swarm-net --privileged \
+ -p 3000:3000 -p 3100:3100 -p 9000:9000 -p 9443:9443 -p 8000:8000 -p 8080:8080 -p 3001:3001 docker:dind 
+  ```
+
+```
+docker run -dit --name worker1 --hostname worker1 --network swarm-net --privileged docker:dind 
+```
+
+```
+docker run -dit --name worker2 --hostname worker2 --network swarm-net --privileged docker:dind
+```
+
+# 3. Initialize Swarm on manager node
+```
+docker exec -it manager sh -c "docker swarm init --advertise-addr manager"
+```
+
+# 4. Join workers to the Swarm (copy the join command from the output above)
+```
+docker exec -it worker1 sh -c "docker swarm join --token <TOKEN> manager:2377"
+docker exec -it worker2 sh -c "docker swarm join --token <TOKEN> manager:2377"
+```
+
+# 5. (On manager) Clone repo and deploy stack
+```
+docker exec -it manager sh
+apk add --no-cache git
+git clone https://github.com/cheschesiulia/you-play.git
+cd you-play/you-play-app
+docker stack deploy -c docker-compose.yml youplay
+```
 
 ## Services
 
-### Auth
+### Auth Service
+- Provides user authentication and token generation.
 
-### Playlists
+### Playlist Service
+- Manages user playlists and their history.
 
-### Streaming
+### Streaming Service
+- Handles music streaming (audio files, access control).
+
+### Databases
+- Each core service has its own PostgreSQL database for isolation.
+- Adminer is available for manual DB inspection.
+
+### Portainer
+- Management UI for Docker Swarm services: https://localhost:9000
+
+### Grafana (Monitoring/Observability)
+- Available at: http://localhost:3001
+- Preconfigured dashboards for DB statistics and user activity.
+
+### Kong
+- API Gateway for routing requests to microservices: http://localhost:8000
+
+---
+
+## Evaluation Checklist (Barem)
+- [x] Minimum 3 custom microservices (Auth, Playlists, Streaming)
+- [x] At least one dedicated database service (PostgreSQL)
+- [x] Database UI (Adminer)
+- [x] Portainer (Swarm management UI)
+- [x] Docker Swarm deployment, multi-node cluster
+- [x] API Gateway (Kong)
+- [x] Monitoring/observability (Grafana dashboards)
+- [x] Can be extended with GitLab CI/CD or Kubernetes as bonus
+
+---
+
+## Notes
+- Default credentials for Grafana and Portainer are `admin` / `admin` (change after first login!)
+- For troubleshooting, use:
+  - `docker service ls` (on manager) to see service status
+  - `docker service logs <SERVICE>` to see logs for a specific service
+  - `docker exec -it <container> sh` to get a shell in any running container
+- All configuration files and provisioning are inside the repo.

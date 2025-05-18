@@ -3,8 +3,6 @@ version: "3.8"
 services:
   frontend:
     image: ghcr.io/cheschesiulia/frontend:latest
-    ports:
-      - "3000:80"
     networks:
       - auth-net
       - streaming-net
@@ -80,8 +78,6 @@ services:
 
   auth-service:
     image: ghcr.io/cheschesiulia/auth-service:latest
-    ports:
-      - "8002:8000"
     depends_on:
       - auth-db
     environment:
@@ -135,8 +131,6 @@ services:
 
   streaming-service:
     image: ghcr.io/cheschesiulia/streaming-service:latest
-    ports:
-      - "8003:8000"
     environment:
       - MINIO_ENDPOINT=http://gemdekaise.go.ro:9007
       - MINIO_ACCESS_KEY=admin
@@ -156,8 +150,6 @@ services:
 
   playlist-service:
     image: ghcr.io/cheschesiulia/playlist-service:latest
-    ports:
-      - "8004:8000"
     depends_on:
       - playlist-db
     environment:
