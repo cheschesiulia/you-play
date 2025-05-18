@@ -15,7 +15,7 @@ function LikedSongsPage() {
   useEffect(() => {
     const fetchLikedSongs = async () => {
       try {
-        const response = await fetch(`/recommendations/${username}`, {
+        const response = await fetch(`/playlist/recommendations/${username}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
