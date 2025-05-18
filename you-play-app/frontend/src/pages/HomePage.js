@@ -9,10 +9,17 @@ function HomePage() {
   const [search, setSearch] = useState('');
   const [filteredSongs, setFilteredSongs] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
+<<<<<<< HEAD
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedArtist, setSelectedArtist] = useState('');
   const [genres, setGenres] = useState([]);
   const [artists, setArtists] = useState([]);
+=======
+  const [genres, setGenres] = useState([]);
+  const [artists, setArtists] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedArtist, setSelectedArtist] = useState('');
+>>>>>>> 52adba192300506486be4ebc48b659b1f3742710
 
   const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
@@ -35,7 +42,7 @@ function HomePage() {
         if (Array.isArray(data)) {
           const songsWithCovers = await Promise.all(
             data.map(async (song) => {
-              const coverResponse = await fetch(`/streaming/cover/${song.title}`, {
+              const coverResponse = await fetch(`/streaming/cover/${encodeURIComponent(song.title)}`, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
@@ -54,6 +61,11 @@ function HomePage() {
 
           setSongs(songsWithCovers);
           setFilteredSongs(songsWithCovers);
+
+          // Extract unique genres and artists
+          setGenres([...new Set(songsWithCovers.map(song => song.genre).filter(Boolean))]);
+          setArtists([...new Set(songsWithCovers.map(song => song.artist).filter(Boolean))]);
+
           await fetchLikedSongs(); // fetch liked songs after setting songs
         } else {
           setSongs([]);
@@ -104,12 +116,94 @@ function HomePage() {
   }, [token, username]);
 
   useEffect(() => {
-    const lowerSearch = search.toLowerCase();
-    const filtered = songs.filter((song) =>
-      song.title.toLowerCase().includes(lowerSearch)
-    );
+    let filtered = songs;
+
+    if (selectedGenre) {
+      filtered = filtered.filter(song => song.genre === selectedGenre);
+    }
+    if (selectedArtist) {
+      filtered = filtered.filter(song => song.artist === selectedArtist);
+    }
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filtered = filtered.filter((song) =>
+        song.title.toLowerCase().includes(lowerSearch)
+      );
+    }
     setFilteredSongs(filtered);
-  }, [search, songs]);
+  }, [search, songs, selectedGenre, selectedArtist]);
+
+  const handleGenreChange = async (e) => {
+    const genre = e.target.value;
+    setSelectedGenre(genre);
+    setSelectedArtist(''); // reset artist filter
+
+    if (genre) {
+      try {
+        const response = await fetch(`/streaming/songs/genre/${encodeURIComponent(genre)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const songsWithCovers = await Promise.all(
+            data.map(async (song) => {
+              const coverResponse = await fetch(`/streaming/cover/${encodeURIComponent(song.title)}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (coverResponse.ok) {
+                const coverData = await coverResponse.json();
+                song.cover_url = coverData.cover_url;
+              } else {
+                song.cover_url = '';
+              }
+              return song;
+            })
+          );
+          setFilteredSongs(songsWithCovers);
+        }
+      } catch (error) {
+        console.error('Error fetching songs by genre:', error);
+      }
+    } else {
+      setFilteredSongs(songs);
+    }
+  };
+
+  const handleArtistChange = async (e) => {
+    const artist = e.target.value;
+    setSelectedArtist(artist);
+    setSelectedGenre(''); // reset genre filter
+
+    if (artist) {
+      try {
+        const response = await fetch(`/streaming/songs/artist/${encodeURIComponent(artist)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const songsWithCovers = await Promise.all(
+            data.map(async (song) => {
+              const coverResponse = await fetch(`/streaming/cover/${encodeURIComponent(song.title)}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (coverResponse.ok) {
+                const coverData = await coverResponse.json();
+                song.cover_url = coverData.cover_url;
+              } else {
+                song.cover_url = '';
+              }
+              return song;
+            })
+          );
+          setFilteredSongs(songsWithCovers);
+        }
+      } catch (error) {
+        console.error('Error fetching songs by artist:', error);
+      }
+    } else {
+      setFilteredSongs(songs);
+    }
+  };
 
   useEffect(() => {
     let updatedSongs = [...songs];
@@ -183,6 +277,7 @@ function HomePage() {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
           <select
             value={selectedGenre}
@@ -201,10 +296,16 @@ function HomePage() {
             }}
           >
             <option value="">🎵 Filter by Genre</option>
+=======
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+          <select value={selectedGenre} onChange={handleGenreChange}>
+            <option value="">Filter by Genre</option>
+>>>>>>> 52adba192300506486be4ebc48b659b1f3742710
             {genres.map((genre, idx) => (
               <option key={idx} value={genre}>{genre}</option>
             ))}
           </select>
+<<<<<<< HEAD
           <select
             value={selectedArtist}
             onChange={handleArtistChange}
@@ -222,6 +323,10 @@ function HomePage() {
             }}
           >
             <option value="">🎤 Filter by Artist</option>
+=======
+          <select value={selectedArtist} onChange={handleArtistChange}>
+            <option value="">Filter by Artist</option>
+>>>>>>> 52adba192300506486be4ebc48b659b1f3742710
             {artists.map((artist, idx) => (
               <option key={idx} value={artist}>{artist}</option>
             ))}
