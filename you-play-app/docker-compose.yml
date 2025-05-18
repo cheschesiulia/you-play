@@ -187,6 +187,7 @@ services:
 volumes:
   auth-db-data:
   playlist-db-data:
+  portainer_data:
 
 networks:
   auth-net:
