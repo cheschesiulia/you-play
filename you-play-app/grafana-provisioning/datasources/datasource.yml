@@ -2,6 +2,7 @@ apiVersion: 1
 datasources:
   - name: PostgreSQL-1
     type: postgres
+    uid: a3023d15-a888-463a-9646-359558cbdeb6
     access: proxy
     url: playlist-db:5432
     user: iuliasiangh
