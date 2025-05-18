@@ -51,11 +51,13 @@ services:
         constraints:
           - node.role == manager
 
-  loki:
+    loki:
     image: grafana/loki:2.9.1
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - monitor-net
     deploy:
@@ -64,6 +66,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+
 
   promtail:
     image: grafana/promtail:2.9.1
