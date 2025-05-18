@@ -9,17 +9,10 @@ function HomePage() {
   const [search, setSearch] = useState('');
   const [filteredSongs, setFilteredSongs] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
-<<<<<<< HEAD
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [selectedArtist, setSelectedArtist] = useState('');
-  const [genres, setGenres] = useState([]);
-  const [artists, setArtists] = useState([]);
-=======
   const [genres, setGenres] = useState([]);
   const [artists, setArtists] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedArtist, setSelectedArtist] = useState('');
->>>>>>> 52adba192300506486be4ebc48b659b1f3742710
 
   const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
@@ -93,26 +86,7 @@ function HomePage() {
       }
     };
 
-    const fetchGenresAndArtists = async () => {
-      try {
-        const response = await fetch('/streaming/genres-artists', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const { genres, artists } = await response.json();
-          setGenres(genres);
-          setArtists(artists);
-        }
-      } catch (error) {
-        console.error('Error fetching genres and artists:', error);
-      }
-    };
-
     fetchSongs();
-    fetchGenresAndArtists();
   }, [token, username]);
 
   useEffect(() => {
@@ -205,20 +179,6 @@ function HomePage() {
     }
   };
 
-  useEffect(() => {
-    let updatedSongs = [...songs];
-
-    if (selectedGenre) {
-      updatedSongs = updatedSongs.filter(song => song.genre === selectedGenre);
-    }
-
-    if (selectedArtist) {
-      updatedSongs = updatedSongs.filter(song => song.artist === selectedArtist);
-    }
-
-    setFilteredSongs(updatedSongs);
-  }, [selectedGenre, selectedArtist, songs]);
-
   const toggleLike = async (event, songTitle) => {
     event.stopPropagation(); // prevent navigating to song page
     const isLiked = likedSongs.includes(songTitle);
@@ -248,14 +208,6 @@ function HomePage() {
     }
   };
 
-  const handleGenreChange = (e) => {
-    setSelectedGenre(e.target.value);
-  };
-
-  const handleArtistChange = (e) => {
-    setSelectedArtist(e.target.value);
-  };
-
   return (
     <div className="home-layout">
       <aside className="sidebar">
@@ -271,13 +223,12 @@ function HomePage() {
 
       <main className="main-content">
         <div className="top-bar">
-          <h1>Welcome back <span role="img" aria-label="wave">👋</span></h1>
+          <h1>Welcome back 👋</h1>
           <div className="logout-button-wrapper">
             <LogoutButton />
           </div>
         </div>
 
-<<<<<<< HEAD
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
           <select
             value={selectedGenre}
@@ -296,16 +247,10 @@ function HomePage() {
             }}
           >
             <option value="">🎵 Filter by Genre</option>
-=======
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-          <select value={selectedGenre} onChange={handleGenreChange}>
-            <option value="">Filter by Genre</option>
->>>>>>> 52adba192300506486be4ebc48b659b1f3742710
             {genres.map((genre, idx) => (
               <option key={idx} value={genre}>{genre}</option>
             ))}
           </select>
-<<<<<<< HEAD
           <select
             value={selectedArtist}
             onChange={handleArtistChange}
@@ -323,10 +268,6 @@ function HomePage() {
             }}
           >
             <option value="">🎤 Filter by Artist</option>
-=======
-          <select value={selectedArtist} onChange={handleArtistChange}>
-            <option value="">Filter by Artist</option>
->>>>>>> 52adba192300506486be4ebc48b659b1f3742710
             {artists.map((artist, idx) => (
               <option key={idx} value={artist}>{artist}</option>
             ))}
